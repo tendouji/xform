@@ -1,0 +1,12 @@
+[data-xform="show-hide-click-content"] {
+  display: none;
+  transition-property: height, margin, padding;
+  transition-duration: $transition-time;
+  transition-timing-function: ease;
+  overflow: hidden;
+
+  &.is-open {
+    display: block;
+    overflow: visible;
+  }
+}

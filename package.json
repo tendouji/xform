@@ -2,12 +2,13 @@
   "name": "@tdj/xform",
   "version": "1.0.0",
   "description": "Extend Form Elements",
-  "main": "index.js",
+  "main": "build/js/index.js",
   "scripts": {
     "dev": "npx mix",
     "watch": "npx mix watch",
     "watch-poll": "npx mix watch -- --watch-options-poll=3000",
-    "build": "npx mix --production",
+    "build-css": "npx mix --mix-config=webpack.mix.scss.js --production",
+    "build": "npm run build-css && npx mix --production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +26,7 @@
     "@babel/core": "^7.17.9",
     "@babel/eslint-parser": "^7.17.0",
     "@babel/eslint-plugin": "^7.17.7",
+    "ajv": "^8.8.2",
     "eslint": "^8.14.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
