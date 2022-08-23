@@ -1,0 +1,27 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "jquery": true
+  },
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "ecmaFeatures": {
+      "modules": true
+    }
+  },
+  "plugins": ["@babel", "prettier"],
+  "extends": ["airbnb-base", "plugin:prettier/recommended"],
+  "rules": {
+    "lines-between-class-members": [
+      "error",
+      "always",
+      {
+        "exceptAfterSingleLine": true
+      }
+    ],
+    "func-names": ["error", "never"],
+    "import/prefer-default-export": "off"
+  }
+}
