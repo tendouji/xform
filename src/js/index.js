@@ -1,3 +1,4 @@
+import { CascadingSelect } from "./components/CascadingSelect";
 import { ShowHideClick } from "./components/ShowHideClick";
 
-export { ShowHideClick };
+export { CascadingSelect, ShowHideClick };
