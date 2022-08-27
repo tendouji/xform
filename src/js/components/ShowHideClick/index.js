@@ -1,4 +1,4 @@
-import { animationTime as globalAnimationTime } from "../../constants";
+import { animationTime as globalAnimationTime } from "../constants";
 
 const SHOW_HIDE_CLICK_BUTTON_SELECTOR = "[data-xform='show-hide-click-button']";
 const SHOW_HIDE_CLICK_CONTENT_SELECTOR = "[data-xform='show-hide-click-content']";
