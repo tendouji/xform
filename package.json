@@ -51,5 +51,8 @@
   "bugs": {
     "url": "https://github.com/tendouji/xform/issues"
   },
-  "homepage": "https://github.com/tendouji/xform#readme"
+  "homepage": "https://github.com/tendouji/xform#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
 }
