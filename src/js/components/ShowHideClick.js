@@ -13,15 +13,15 @@ class ShowHideClick {
   animationTime = globalAnimationTime * 2;
   isOpenClassName = "is-open";
 
-  constructor() {
+  static initialise() {
     const $showHideClickContents = document.querySelectorAll(SHOW_HIDE_CLICK_CONTENT_SELECTOR);
     [...$showHideClickContents].forEach(($showHideClickContent) => {
       /* eslint-disable-next-line no-unused-vars */
-      this.initialise($showHideClickContent);
+      const showHideClick = new ShowHideClick($showHideClickContent);
     });
   }
 
-  initialise($showHideClickContent) {
+  constructor($showHideClickContent) {
     this.$showHideClickContent = $showHideClickContent;
     const {
       xformShowHideClickButtonId,
@@ -61,7 +61,7 @@ class ShowHideClick {
     targetStyle.display = "block";
     targetStyle.overflow = "hidden";
     targetStyle.height = "auto"; // NOTE: temporarily make element visible to get height
-    const { offsetHeight } = $currentElement;
+    const { height: offsetHeight } = $currentElement.getBoundingClientRect();
     targetStyle.height = 0;
     setTimeout(() => {
       targetStyle.height = `${offsetHeight}px`;
@@ -75,7 +75,8 @@ class ShowHideClick {
 
   slideUp() {
     const $currentElement = this.$showHideClickContent;
-    const { style: targetStyle, offsetHeight } = $currentElement;
+    const { height: offsetHeight } = $currentElement.getBoundingClientRect();
+    const { style: targetStyle } = $currentElement;
     targetStyle.overflow = "hidden";
     targetStyle.height = `${offsetHeight}px`;
     setTimeout(() => {
