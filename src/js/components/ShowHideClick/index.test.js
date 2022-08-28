@@ -17,6 +17,23 @@ describe("Test ShowHideClick UI behaviour", () => {
   let isDefaultOpen = false;
   const isOpenClassName = "is-open";
 
+  const getBoundingClientRectMock = jest.fn(() => {
+    const defaultObj = {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0
+    };
+    return {
+      ...defaultObj,
+      ...($componentContent.classList.contains(isOpenClassName) ? { width: 300, height: 300 } : {})
+    };
+  });
+
   beforeEach(() => {
     document.body.innerHTML = `
       <button data-xform="show-hide-click-button" data-xform-show-hide-click-button-id="xbutton">
@@ -51,28 +68,34 @@ describe("Test ShowHideClick UI behaviour", () => {
     buttonOpenText = xformShowHideClickButtonOpenText;
     buttonCloseText = xformShowHideClickButtonCloseText;
     isDefaultOpen = xformShowHideClickIsDefaultOpen;
+    $componentContent.getBoundingClientRect = getBoundingClientRectMock;
   });
+  describe("ShowHideClick default state", () => {
+    test("Able to set given text to target button", () => {
+      ShowHideClick.initialise();
+      expect($componentButtonText.innerText).toBe(buttonOpenText);
+    });
 
-  test("Able to set given text to target button", () => {
-    ShowHideClick.initialise();
-    expect($componentButtonText.innerText).toBe(buttonOpenText);
-  });
+    test("By default is closed", () => {
+      ShowHideClick.initialise();
+      expect($componentButton).not.toHaveClass(isOpenClassName);
+      expect($componentContent).not.toHaveClass(isOpenClassName);
+      const { height } = $componentContent.getBoundingClientRect();
+      expect(height).toEqual(0);
+    });
 
-  test("By default is closed", () => {
-    ShowHideClick.initialise();
-    expect($componentButton).not.toHaveClass(isOpenClassName);
-    expect($componentContent).not.toHaveClass(isOpenClassName);
-  });
-
-  test("When target button clicked, content is opened", (done) => {
-    ShowHideClick.initialise();
-    $componentButton.click();
-    setTimeout(() => {
-      expect($componentButton).toHaveClass(isOpenClassName);
-      expect($componentContent).toHaveClass(isOpenClassName);
-      expect($componentButtonText.innerText).toBe(buttonCloseText);
-      done();
-    }, animationTime * 2);
+    test("When target button clicked, content is opened", (done) => {
+      ShowHideClick.initialise();
+      $componentButton.click();
+      setTimeout(() => {
+        expect($componentButton).toHaveClass(isOpenClassName);
+        expect($componentContent).toHaveClass(isOpenClassName);
+        expect($componentButtonText.innerText).toBe(buttonCloseText);
+        const { height } = $componentContent.getBoundingClientRect();
+        expect(height).toBeGreaterThan(0);
+        done();
+      }, animationTime * 2);
+    });
   });
 
   describe('ShowHideClick with `data-xform-show-hide-click-is-default-open="true"`', () => {
@@ -80,10 +103,17 @@ describe("Test ShowHideClick UI behaviour", () => {
       $componentContent.dataset.xformShowHideClickIsDefaultOpen = "true";
     });
 
+    test("Target button text to use `buttonCloseText`", () => {
+      ShowHideClick.initialise();
+      expect($componentButtonText.innerText).toBe(buttonCloseText);
+    });
+
     test("By default is opened", async () => {
       ShowHideClick.initialise();
       expect($componentButton).toHaveClass(isOpenClassName);
       expect($componentContent).toHaveClass(isOpenClassName);
+      const { height } = $componentContent.getBoundingClientRect();
+      expect(height).toBeGreaterThan(0);
     });
 
     test("When target button clicked, content is closed", (done) => {
@@ -93,6 +123,8 @@ describe("Test ShowHideClick UI behaviour", () => {
         expect($componentButton).not.toHaveClass(isOpenClassName);
         expect($componentContent).not.toHaveClass(isOpenClassName);
         expect($componentButtonText.innerText).toBe(buttonOpenText);
+        const { height } = $componentContent.getBoundingClientRect();
+        expect(height).toEqual(0);
         done();
       }, animationTime * 2);
     });
