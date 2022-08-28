@@ -47,7 +47,7 @@ class CascadingSelect {
     const { xformCascadingSelectOptionsApiPath, xformCascadingSelectOptionsPartialApiPath } =
       this.$selectElement.dataset;
     if (xformCascadingSelectOptionsApiPath) {
-      // Get self options data from API
+      // NOTE: Get self options data from API
       this.getOptionsWithApi(xformCascadingSelectOptionsApiPath);
       return;
     }

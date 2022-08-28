@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import "@testing-library/jest-dom";
 import { animationTime } from "../../constants.js";
 import { ShowHideClick } from "./index.js";
