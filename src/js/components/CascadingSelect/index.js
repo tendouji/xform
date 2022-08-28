@@ -44,7 +44,8 @@ class CascadingSelect {
       this.selectedValue = $selectOptions[selectedIndex].value;
     }
 
-    const { xformCascadingSelectOptionsApiPath } = this.$selectElement.dataset;
+    const { xformCascadingSelectOptionsApiPath, xformCascadingSelectOptionsPartialApiPath } =
+      this.$selectElement.dataset;
     if (xformCascadingSelectOptionsApiPath) {
       // Get self options data from API
       this.getOptionsWithApi(xformCascadingSelectOptionsApiPath);
@@ -58,25 +59,31 @@ class CascadingSelect {
       }
     });
 
-    this.checkAndStoreChildSelectOptionsData();
+    if (!xformCascadingSelectOptionsPartialApiPath) {
+      /* NOTE:
+       * if element has partial API,
+       * it needs to wait for parent select value first
+       */
+      this.checkAndStoreChildSelectOptionsData();
+    }
   }
 
   bindOnChangeBehaviour() {
-    this.$selectElement.addEventListener("change", (e) => {
-      this.selectedValue = e.target.value;
+    const changeEventHandler = () => {
       if (this.childSelectPartialApiPath) {
-        this.triggerEvent(1);
+        this.triggerEvent();
       } else {
         this.filterChildSelectOptions();
       }
+    };
+
+    this.$selectElement.addEventListener("change", (e) => {
+      this.selectedValue = e.target.value;
+      changeEventHandler();
     });
 
-    if (this.childSelectPartialApiPath) {
-      this.selectedValue = this.$selectElement.value;
-      this.triggerEvent(2);
-    } else {
-      this.filterChildSelectOptions();
-    }
+    this.selectedValue = this.$selectElement.value;
+    changeEventHandler();
   }
 
   checkAndStoreChildSelectOptionsData() {
@@ -151,13 +158,11 @@ class CascadingSelect {
   getOptionsWithApi(apiPath, $targetSelect = null) {
     const $currentSelect = $targetSelect || this.$selectElement;
     const mapDataToSelectArray = (responseData) => {
-      return responseData.map((item) => {
-        return {
-          value: item.id,
-          text: item.text,
-          selected: item.selected === true
-        };
-      });
+      return responseData.map((item) => ({
+        value: item.id,
+        text: item.text,
+        selected: item.selected === true
+      }));
     };
     const setupSelectOptions = (selectOptionsData) => {
       CascadingSelect.replaceSelectOptions(selectOptionsData, $currentSelect);
@@ -212,7 +217,6 @@ class CascadingSelect {
         apiPath: `${this.childSelectPartialApiPath}${this.selectedValue}`
       }
     });
-
     document.dispatchEvent(customEvent);
   }
 }
