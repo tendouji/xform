@@ -1,4 +1,5 @@
 {
+  "testEnvironment": "jest-environment-jsdom",
   "bail": 1,
   "verbose": true
 }
