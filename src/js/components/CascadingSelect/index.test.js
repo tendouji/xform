@@ -1,7 +1,10 @@
 import "@testing-library/jest-dom";
+import axios from "axios";
 import { CascadingSelect } from "./index.js";
 
 ("use strict");
+
+jest.mock("axios", () => jest.fn(() => Promise.resolve({ data: "data" })));
 
 describe("Test CascadingSelect UI behaviour", () => {
   describe("CascadingSelect default state", () => {
@@ -111,7 +114,6 @@ describe("Test CascadingSelect UI behaviour", () => {
             data-xform="cascading-select"
             data-xform-cascading-select-select-id="childSelect"
             data-xform-cascading-select-options-partial-api-path="${childApiPath}"
-            data-xform-cascading-select-use-data-store="true"
           >
           </select>
         </div>
@@ -122,16 +124,25 @@ describe("Test CascadingSelect UI behaviour", () => {
       $childSelect = $allCascadingSelect[1];
     });
 
-    test("Parent select with `data-xform-cascading-select-options-api-path` should call `getOptionsWithApi()` once", () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test("Parent select with `data-xform-cascading-select-options-api-path` should call `getOptionsWithApi()` once", async () => {
       const getOptionsWithApiSpy = jest.spyOn(CascadingSelect.prototype, "getOptionsWithApi");
       CascadingSelect.initialise();
       expect(getOptionsWithApiSpy).toHaveBeenCalledTimes(1);
       expect(getOptionsWithApiSpy).toHaveBeenCalledWith(parentApiPath);
+      expect(axios).toHaveBeenCalledWith({
+        url: parentApiPath,
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      });
+      expect(axios).toHaveBeenCalledTimes(1);
     });
 
     test("Child select should call `getOptionsWithApi()` once when `ParentOptionLoaded` event triggered", () => {
-      CascadingSelect.initialise();
-
       const targetParentValue = "2";
       const customEvent = new CustomEvent(CascadingSelect.ParentOptionLoadedEventName, {
         detail: {
@@ -140,10 +151,46 @@ describe("Test CascadingSelect UI behaviour", () => {
           apiPath: `${childApiPath}${targetParentValue}`
         }
       });
+      const getOptionsWithApiSpy = jest.spyOn(CascadingSelect.prototype, "getOptionsWithApi");
+
+      CascadingSelect.initialise();
+
       document.dispatchEvent(customEvent);
 
-      const getOptionsWithApiSpy = jest.spyOn(CascadingSelect.prototype, "getOptionsWithApi");
-      expect(getOptionsWithApiSpy).toHaveBeenCalledWith(`${childApiPath}${targetParentValue}`);
+      expect(getOptionsWithApiSpy).toHaveBeenLastCalledWith(`${childApiPath}${targetParentValue}`);
+      expect(getOptionsWithApiSpy).toHaveBeenCalledTimes(2);
+
+      expect(axios).toHaveBeenCalledWith({
+        url: `${childApiPath}${targetParentValue}`,
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      });
+      expect(axios).toHaveBeenCalled();
+    });
+
+    test("Child select should not trigger API when xformCascadingSelectUseDataStore is true and apiDataStore contain existing data", (done) => {
+      const targetParentValue = "1";
+      const customEvent = new CustomEvent(CascadingSelect.ParentOptionLoadedEventName, {
+        detail: {
+          targetSelect: $childSelect,
+          parentValue: targetParentValue,
+          apiPath: `${childApiPath}${targetParentValue}`
+        }
+      });
+
+      axios.mockResolvedValue({
+        data: { optionList: parentApiPathResult }
+      });
+      $childSelect.dataset.xformCascadingSelectUseDataStore = "true";
+
+      CascadingSelect.initialise();
+
+      setTimeout(() => {
+        document.dispatchEvent(customEvent);
+        expect(axios).toHaveBeenCalledTimes(2);
+        done();
+      }, 500);
     });
 
     test("CascadingSelect replaceSelectOptions() able to populate options with API response data", () => {
