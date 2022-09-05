@@ -8,7 +8,8 @@
     "watch": "npx mix watch",
     "watch-poll": "npx mix watch -- --watch-options-poll=3000",
     "build-css": "npx mix --mix-config=webpack.mix.scss.js --production",
-    "build": "npm run build-css && npx mix --production",
+    "build-js": "npx mix --production",
+    "build": "npm run build-css && npm run build-js",
     "test": "jest"
   },
   "repository": {
