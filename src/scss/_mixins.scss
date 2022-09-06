@@ -1,0 +1,11 @@
+@mixin center-aligned {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin text-truncate {
+  text-overflow: ellipsis;
+  white-space: none;
+  overflow: hidden;
+}

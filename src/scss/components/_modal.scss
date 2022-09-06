@@ -1,0 +1,72 @@
+$modal-max-width: 25rem; // 400px
+$modal-header-height: 3rem;
+
+.modal {
+  @include center-aligned;
+
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+  transition: visibility $transition-time, opacity $transition-time;
+  z-index: 1;
+
+  &.is-displayed {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  &__dialog {
+    width: calc(100% - 2 * #{$general-gap});
+    max-width: $modal-max-width;
+    background: #fff;
+    border: $simple-border;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    height: $modal-header-height;
+
+    &__title {
+      @include text-truncate;
+
+      width: calc(100% - #{$modal-header-height} - #{$general-gap});
+      padding-left: $general-gap;
+      font-weight: 700;
+    }
+
+    &__close {
+      width: $modal-header-height;
+      height: $modal-header-height;
+      border: 0;
+      padding: 0;
+      margin-left: auto;
+      cursor: pointer;
+
+      &::before {
+        @include center-aligned;
+
+        content: "✕";
+      }
+    }
+  }
+
+  &__body {
+    padding: $general-gap;
+  }
+
+  &__footer {
+    padding: $general-gap;
+    text-align: center;
+
+    button {
+      & + button {
+        margin-left: $general-gap;
+      }
+    }
+  }
+}
